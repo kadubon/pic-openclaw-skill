@@ -33,6 +33,8 @@ The goal is AI agent action checking, AI workflow verification, LLM output valid
 
 Skill-only mode is the default path. It does not require PIC, Python, uv, a network call, or a clone of the PIC repository.
 
+Recommended first path: use skill-only mode by copying `skill/pic-residual-guard/` into your OpenClaw skills directory. Configure PIC-backed mode only after reviewing the skill and verifying your local PIC command.
+
 Manual copy is the primary install path:
 
 ```bash
@@ -158,6 +160,12 @@ PIC integration is optional and user-configured. PIC is used as a residual ledge
 This skill does not claim that PIC proves real ASI, external-world truth, or action safety.
 
 Search terms: OpenClaw skill, OpenClaw agent safety, AI agent action checking, AI workflow verification, autonomous agent guardrail, LLM output validation, residual ledger, proof obligations, agent action proposal, skill install safety, memory write review, PIC integration, Percolation Inversion Compiler.
+
+## Release status
+
+Current release: v0.1.0.
+
+This release is intended for manual OpenClaw skill installation and local testing. It is not yet an official ClawHub submission package. Skill-only mode is the recommended first path. PIC-backed mode is optional and requires trusted local operator configuration.
 
 ## Examples
 
