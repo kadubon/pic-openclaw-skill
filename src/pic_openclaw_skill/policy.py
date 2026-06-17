@@ -16,6 +16,7 @@ from pic_openclaw_skill.records import (
     OpenClawResultClaim,
     OpenClawSkillInstall,
     PicDiagnostics,
+    PolicyMode,
 )
 from pic_openclaw_skill.safety import sanitize_public_text
 
@@ -45,8 +46,10 @@ def evaluate_policy(
     record: InputRecord,
     *,
     input_ref: str,
+    mode: PolicyMode = "advisory",
     pic_report: Mapping[str, object] | None = None,
     pic_command_failed: bool = False,
+    pic_failure_reason: str | None = None,
 ) -> BridgeDecision:
     reasons: list[str] = []
     missing: list[str] = []
@@ -59,8 +62,8 @@ def evaluate_policy(
     pic_diagnostics = PicDiagnostics()
 
     if pic_command_failed:
-        reasons.append("PIC command failed in PIC-backed mode")
-        decision = "block"
+        reasons.append(pic_failure_reason or "PIC command failed in PIC-backed mode")
+        decision = "block" if mode == "enforce" else _max_decision(decision, "defer")
 
     if pic_report is not None:
         pic_accepted = _as_bool(pic_report.get("accepted"))
@@ -78,9 +81,12 @@ def evaluate_policy(
             if getattr(record, "risk_level", "low") in {"high", "critical"}:
                 decision = _max_decision(decision, "defer")
 
+    decision = _apply_mode(record, mode, decision, reasons, missing)
+
     return make_decision(
         record,
         input_ref=input_ref,
+        mode=mode,
         decision=decision,
         reasons=reasons or ["policy completed with no blocking reason"],
         missing_obligations=missing,
@@ -91,6 +97,85 @@ def evaluate_policy(
         pic_settled=pic_settled,
         pic_diagnostics=pic_diagnostics,
     )
+
+
+def _apply_mode(
+    record: InputRecord,
+    mode: PolicyMode,
+    decision: DecisionName,
+    reasons: list[str],
+    missing: list[str],
+) -> DecisionName:
+    if mode == "observe":
+        reasons.append("diagnostic observation only")
+        if decision == "block" and not _has_hard_hazard(record):
+            return "defer"
+        return decision
+    if mode == "advisory":
+        reasons.append("advisory decision does not bypass OpenClaw approvals")
+        return decision
+    reasons.append("enforce mode applies stronger external-effect policy")
+    return _enforce_decision(record, decision, reasons, missing)
+
+
+def _enforce_decision(
+    record: InputRecord,
+    decision: DecisionName,
+    reasons: list[str],
+    missing: list[str],
+) -> DecisionName:
+    if isinstance(record, OpenClawActionProposal):
+        kind = record.action_kind.lower()
+        args_text = str(record.tool_arguments)
+        if _contains_credential_signal(kind, args_text):
+            return "block"
+        if kind in DESTRUCTIVE_ACTION_KINDS:
+            return "block"
+        if kind in SHELL_ACTION_KINDS:
+            if not record.tool_arguments or _unknown_shell(record.tool_arguments):
+                return "block"
+            if UNSAFE_SHELL_RE.search(args_text):
+                return "block"
+        if record.risk_level == "critical" and not record.requires_human_confirmation:
+            return "block"
+        if record.external_effect and not record.rollback_plan:
+            if "rollback_plan" not in missing:
+                missing.append("rollback_plan")
+            decision = _max_decision(decision, "defer")
+        if record.external_effect and (record.missing_evidence or not record.evidence_refs):
+            decision = _max_decision(decision, "defer")
+        return decision
+    if isinstance(record, OpenClawSkillInstall):
+        if record.credential_access_required or record.risk_level == "critical":
+            return "block"
+        if record.shell_required or record.network_required or record.file_write_required:
+            return _max_decision(decision, "defer")
+    if isinstance(record, OpenClawMemoryWrite) and record.risk_level == "critical":
+        return "block"
+    return decision
+
+
+def _has_hard_hazard(record: InputRecord) -> bool:
+    if isinstance(record, OpenClawActionProposal):
+        kind = record.action_kind.lower()
+        args_text = str(record.tool_arguments)
+        return (
+            _contains_credential_signal(kind, args_text)
+            or kind in DESTRUCTIVE_ACTION_KINDS
+            or (
+                kind in SHELL_ACTION_KINDS
+                and (
+                    not record.tool_arguments
+                    or _unknown_shell(record.tool_arguments)
+                    or bool(UNSAFE_SHELL_RE.search(args_text))
+                )
+            )
+        )
+    if isinstance(record, OpenClawSkillInstall):
+        return record.credential_access_required or any(
+            permission.lower() in UNCLEAR_PERMISSIONS for permission in record.requested_permissions
+        )
+    return False
 
 
 def _base_decision(record: InputRecord, reasons: list[str], missing: list[str]) -> DecisionName:

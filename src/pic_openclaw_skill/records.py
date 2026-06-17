@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 RiskLevel = Literal["low", "medium", "high", "critical"]
 DecisionName = Literal["allow", "warn", "defer", "block"]
+PolicyMode = Literal["observe", "advisory", "enforce"]
 
 
 class StrictRecord(BaseModel):
@@ -88,9 +89,12 @@ class BridgeDecision(StrictRecord):
     decision_id: str
     input_ref: str
     phase: str
+    mode: PolicyMode = "advisory"
     decision: DecisionName
     allowed_to_execute: bool
+    policy_allows_next_step: bool
     requires_human_review: bool
+    requires_user_authorization: bool
     pic_used: bool
     pic_accepted: bool | None = None
     pic_operationally_usable: bool | None = None

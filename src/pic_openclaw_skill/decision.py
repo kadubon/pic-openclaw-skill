@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from pic_openclaw_skill.records import BridgeDecision, DecisionName, InputRecord, PicDiagnostics
+from pic_openclaw_skill.records import (
+    BridgeDecision,
+    DecisionName,
+    InputRecord,
+    PicDiagnostics,
+    PolicyMode,
+)
 from pic_openclaw_skill.safety import SAFETY_BOUNDARY, safe_ref, sanitize_public_text
 
 
@@ -12,6 +18,7 @@ def make_decision(
     record: InputRecord,
     *,
     input_ref: str,
+    mode: PolicyMode = "advisory",
     decision: DecisionName,
     reasons: list[str],
     missing_obligations: list[str] | None = None,
@@ -23,14 +30,19 @@ def make_decision(
     pic_diagnostics: PicDiagnostics | None = None,
     safe_next_steps: list[str] | None = None,
 ) -> BridgeDecision:
-    allowed = decision == "allow"
+    allowed = mode != "observe" and decision == "allow"
+    policy_allows_next_step = mode != "observe" and decision in {"allow", "warn"}
+    requires_user_authorization = _requires_user_authorization(record, decision)
     return BridgeDecision(
         decision_id=f"bridge-decision:{uuid4()}",
         input_ref=safe_ref(input_ref),
         phase=record.phase,
+        mode=mode,
         decision=decision,
         allowed_to_execute=allowed,
+        policy_allows_next_step=policy_allows_next_step,
         requires_human_review=decision in {"defer", "block"} or _requires_review(record),
+        requires_user_authorization=requires_user_authorization,
         pic_used=pic_used,
         pic_accepted=pic_accepted,
         pic_operationally_usable=pic_operationally_usable,
@@ -65,6 +77,14 @@ def _requires_review(record: InputRecord) -> bool:
     return bool(getattr(record, "requires_human_confirmation", False)) or getattr(
         record, "risk_level", "low"
     ) in {"high", "critical"}
+
+
+def _requires_user_authorization(record: InputRecord, decision: DecisionName) -> bool:
+    return (
+        decision in {"defer", "block"}
+        or _requires_review(record)
+        or bool(getattr(record, "external_effect", False))
+    )
 
 
 def _sanitize_pic_diagnostics(diagnostics: PicDiagnostics | None) -> PicDiagnostics:

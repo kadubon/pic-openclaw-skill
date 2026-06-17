@@ -4,9 +4,12 @@ Generated agent output is a candidate, not verified work.
 
 ## Decision
 
+- mode: advisory
 - decision: defer
 - allowed_to_execute: false
+- policy_allows_next_step: false
 - requires_human_review: true
+- requires_user_authorization: true
 - risk_level: medium
 - phase: pre_action
 

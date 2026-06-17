@@ -21,4 +21,6 @@ Recommended OpenClaw-side controls:
 - keep filesystem tools workspace-only
 - use skill allowlists for agents that should not see this skill
 
+`--pic-command` is trusted local operator configuration. Do not let OpenClaw or an LLM generate it, and do not pass shell pipelines. The helper uses `shlex.split` with `shell=False`, but the command still selects a trusted local executable.
+
 Do not include secrets, tokens, private keys, local absolute paths, browser profiles, or private OpenClaw workspace data in public examples or reports.

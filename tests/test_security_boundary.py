@@ -44,11 +44,14 @@ def test_docs_match_openclaw_install_and_clawhub_boundaries() -> None:
             (ROOT / "docs" / "setup.md").read_text(encoding="utf-8"),
         ]
     )
-    assert "openclaw skills install git:kadubon/pic-openclaw-skill@main" in combined
     assert "<workspace>/skills/pic-residual-guard" in combined
     assert "~/.openclaw/skills/pic-residual-guard" in combined
-    assert "ClawHub publication is out of scope" in combined
-    assert "requires a separate license decision" in combined
+    assert "Git install syntax is version-dependent" in combined
+    assert "openclaw skills install git:kadubon/pic-openclaw-skill@main" in combined
+    assert combined.index("mkdir -p <workspace>/skills/pic-residual-guard") < combined.index(
+        "openclaw skills install git:kadubon/pic-openclaw-skill@main"
+    )
+    assert "requires a separate explicit license decision" in combined
     assert "clawhub publish" not in combined.lower()
 
 
@@ -89,6 +92,32 @@ def test_docs_describe_pic_diagnostics_as_non_executable() -> None:
         "not execution instructions",
     ]:
         assert phrase in combined
+
+
+def test_pic_command_docs_state_trusted_operator_boundary() -> None:
+    combined = "\n".join(
+        [
+            (ROOT / "README.md").read_text(encoding="utf-8"),
+            (ROOT / "docs" / "pic-backed-mode.md").read_text(encoding="utf-8"),
+            (ROOT / "docs" / "security-boundary.md").read_text(encoding="utf-8"),
+        ]
+    )
+    for phrase in [
+        "--pic-command` is trusted local operator configuration",
+        "Do not let OpenClaw or an LLM generate it",
+        "do not pass shell pipelines",
+        "shlex.split",
+        "shell=False",
+        "`pic`",
+        "`uv run pic`",
+    ]:
+        assert phrase in combined
+
+
+def test_publication_and_licensing_docs_exist() -> None:
+    assert (ROOT / "docs" / "publication-checklist.md").exists()
+    assert (ROOT / "docs" / "licensing.md").exists()
+    assert (ROOT / "skill" / "pic-residual-guard" / "LICENSE").exists()
 
 
 def test_feedback_has_no_secret_or_local_path_leaks() -> None:

@@ -45,9 +45,11 @@ def main(
     pic_report: Annotated[
         Path | None, typer.Option("--pic-report", help="PIC JSON report path.")
     ] = None,
+    pic_timeout_seconds: Annotated[
+        float, typer.Option("--pic-timeout-seconds", help="PIC backend subprocess timeout.")
+    ] = 120,
     no_pic: Annotated[bool, typer.Option("--no-pic", help="Run skill-only policy.")] = False,
 ) -> None:
-    del mode
     record = load_input(input_path)
     if no_pic and (pic_repo is not None or pic_command is not None):
         _configuration_error(
@@ -56,6 +58,7 @@ def main(
 
     pic_payload: dict[str, object] | None = None
     pic_failed = False
+    pic_failure_reason: str | None = None
     should_use_pic = not no_pic and (pic_command is not None or pic_repo is not None)
     if should_use_pic:
         effective_pic_command = pic_command or "uv run pic"
@@ -66,15 +69,19 @@ def main(
                 pic_command=effective_pic_command,
                 profile=profile,
                 pic_report_path=pic_report,
+                timeout_seconds=pic_timeout_seconds,
             )
-        except PicBackendError:
+        except PicBackendError as exc:
             pic_failed = True
+            pic_failure_reason = exc.public_reason()
 
     decision = evaluate_policy(
         record,
         input_ref=str(input_path),
+        mode=mode,
         pic_report=pic_payload,
         pic_command_failed=pic_failed,
+        pic_failure_reason=pic_failure_reason,
     )
     write_outputs(decision, record, output, feedback)
 
@@ -115,8 +122,10 @@ def write_outputs(
     if output is None:
         typer.echo(payload)
     else:
+        output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(payload + "\n", encoding="utf-8")
     if feedback is not None:
+        feedback.parent.mkdir(parents=True, exist_ok=True)
         feedback.write_text(render_feedback(decision, record), encoding="utf-8")
 
 

@@ -17,6 +17,12 @@ bridge-decision.json
 pic-feedback.md
 pic-report.json
 candidate.txt
+*.local.json
+*.private.json
+*.secret.*
+.openclaw/
+openclaw-workspace/
+percolation-inversion-compiler/
 identity-context.json
 runtime.sqlite
 *.log

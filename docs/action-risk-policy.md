@@ -9,7 +9,7 @@ Decisions are deterministic.
 - Credential access blocks.
 - Skill install with unclear permissions defers or blocks.
 - Shell required with unknown command blocks.
-- PIC command failure blocks in PIC-backed mode.
+- PIC command failure defers in observe/advisory mode and blocks in enforce mode.
 - PIC `settled=false` is diagnostic, not command failure.
 - PIC `accepted=true` is not permission to execute.
 - PIC `operationally_usable=false` preserves residuals and defers high-risk actions.

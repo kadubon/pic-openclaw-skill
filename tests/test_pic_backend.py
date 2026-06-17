@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -92,3 +93,121 @@ def test_pic_backend_uses_pic_repo_as_cwd_when_configured(monkeypatch, tmp_path:
     )
     assert calls[0]["cwd"] == tmp_path.resolve()
     assert calls[0]["command"][:5] == ["uv", "run", "pic", "agent", "intake"]
+
+
+def test_pic_backend_creates_pic_report_parent(monkeypatch, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]
+    def fake_run(command, **kwargs):  # type: ignore[no-untyped-def]
+        output_path = Path(command[command.index("--output") + 1])
+        output_path.write_text(
+            json.dumps(
+                {
+                    "accepted": True,
+                    "operationally_usable": True,
+                    "settled": True,
+                    "residual_summary": {},
+                    "runtime_report": {"missing_obligations": []},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        class Completed:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        return Completed()
+
+    monkeypatch.setattr("pic_openclaw_skill.pic_backend.subprocess.run", fake_run)
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    report_path = tmp_path / "nested" / "pic" / "report.json"
+    run_pic_backend(
+        record,
+        pic_repo=None,
+        pic_command="pic",
+        profile="development",
+        pic_report_path=report_path,
+    )
+    assert report_path.exists()
+
+
+def test_pic_backend_nonzero_return_has_sanitized_diagnostics(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    def fake_run(command, **kwargs):  # type: ignore[no-untyped-def]
+        class Completed:
+            returncode = 2
+            stdout = "partial stdout"
+            stderr = "D:" + "\\Private\\workspace " + ("api_" + "key=redacted-value")
+
+        return Completed()
+
+    monkeypatch.setattr("pic_openclaw_skill.pic_backend.subprocess.run", fake_run)
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    with pytest.raises(PicBackendError) as excinfo:
+        run_pic_backend(record, pic_repo=None, pic_command="pic", profile="development")
+    reason = excinfo.value.public_reason()
+    assert "returncode=2" in reason
+    assert "D:" not in reason
+    assert ("api_" + "key=") not in reason
+
+
+def test_pic_backend_timeout_has_sanitized_diagnostics(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    def fake_run(command, **kwargs):  # type: ignore[no-untyped-def]
+        raise subprocess.TimeoutExpired(
+            cmd=command,
+            timeout=kwargs["timeout"],
+            output="D:" + "\\Private\\workspace",
+            stderr=("api_" + "key=redacted-value"),
+        )
+
+    monkeypatch.setattr("pic_openclaw_skill.pic_backend.subprocess.run", fake_run)
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    with pytest.raises(PicBackendError) as excinfo:
+        run_pic_backend(
+            record,
+            pic_repo=None,
+            pic_command="pic",
+            profile="development",
+            timeout_seconds=0.01,
+        )
+    reason = excinfo.value.public_reason()
+    assert "PIC command timed out" in reason
+    assert "timeout=true" in reason
+    assert "D:" not in reason
+    assert ("api_" + "key=") not in reason
+
+
+def test_pic_backend_invalid_json_reports_safely(monkeypatch, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]
+    def fake_run(command, **kwargs):  # type: ignore[no-untyped-def]
+        output_path = Path(command[command.index("--output") + 1])
+        output_path.write_text("{not-json", encoding="utf-8")
+
+        class Completed:
+            returncode = 0
+            stdout = ""
+            stderr = ""
+
+        return Completed()
+
+    monkeypatch.setattr("pic_openclaw_skill.pic_backend.subprocess.run", fake_run)
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    with pytest.raises(PicBackendError, match="valid JSON"):
+        run_pic_backend(
+            record,
+            pic_repo=None,
+            pic_command="pic",
+            profile="development",
+            pic_report_path=tmp_path / "report.json",
+        )
+
+
+def test_pic_backend_command_not_found_reports_safely(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    def fake_run(command, **kwargs):  # type: ignore[no-untyped-def]
+        raise FileNotFoundError("D:" + "\\Private\\workspace\\pic.exe")
+
+    monkeypatch.setattr("pic_openclaw_skill.pic_backend.subprocess.run", fake_run)
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    with pytest.raises(PicBackendError) as excinfo:
+        run_pic_backend(record, pic_repo=None, pic_command="missing-pic", profile="development")
+    reason = excinfo.value.public_reason()
+    assert "could not be started" in reason
+    assert "D:" not in reason
