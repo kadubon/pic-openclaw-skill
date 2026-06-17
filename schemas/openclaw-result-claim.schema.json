@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenClawResultClaim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["claim_id", "phase", "action_kind", "claimed_result", "evidence_refs", "logs_refs", "rollback_available", "unresolved_items"],
+  "properties": {
+    "schema_version": {"type": "string", "default": "0.1.0"},
+    "claim_id": {"type": "string"},
+    "phase": {"const": "post_action"},
+    "agent_id": {"type": ["string", "null"]},
+    "action_kind": {"type": "string"},
+    "claimed_result": {"type": "string"},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "logs_refs": {"type": "array", "items": {"type": "string"}},
+    "rollback_available": {"type": "boolean"},
+    "unresolved_items": {"type": "array", "items": {"type": "string"}}
+  }
+}

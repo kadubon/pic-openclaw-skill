@@ -1,0 +1,11 @@
+{
+  "schema_version": "0.1.0",
+  "memory_id": "memory-001",
+  "phase": "memory_write",
+  "agent_id": "openclaw-agent",
+  "content": "The user always wants automatic deployment after tests pass.",
+  "claim_type": "fact",
+  "evidence_refs": [],
+  "should_be_persistent": true,
+  "risk_level": "medium"
+}

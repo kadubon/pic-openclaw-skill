@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BridgeDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision_id", "input_ref", "phase", "decision", "allowed_to_execute", "requires_human_review", "pic_used", "missing_obligations", "residual_summary", "pic_diagnostics", "safe_next_steps", "reasons", "safety_boundary"],
+  "properties": {
+    "schema_version": {"type": "string", "default": "0.1.0"},
+    "decision_id": {"type": "string"},
+    "input_ref": {"type": "string"},
+    "phase": {"type": "string"},
+    "decision": {"enum": ["allow", "warn", "defer", "block"]},
+    "allowed_to_execute": {"type": "boolean"},
+    "requires_human_review": {"type": "boolean"},
+    "pic_used": {"type": "boolean"},
+    "pic_accepted": {"type": ["boolean", "null"]},
+    "pic_operationally_usable": {"type": ["boolean", "null"]},
+    "pic_settled": {"type": ["boolean", "null"]},
+    "missing_obligations": {"type": "array", "items": {"type": "string"}},
+    "residual_summary": {"type": "object", "additionalProperties": {"type": "number"}},
+    "pic_diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_tasks", "route_execution_requests", "residual_ledger", "provenance_refs"],
+      "properties": {
+        "agent_tasks": {"type": "array", "items": {"type": "string"}},
+        "route_execution_requests": {"type": "array", "items": {"type": "string"}},
+        "residual_ledger": {"type": "array", "items": {"type": "string"}},
+        "provenance_refs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "safe_next_steps": {"type": "array", "items": {"type": "string"}},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "safety_boundary": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1.0",
+  "decision_id": "bridge-decision:example",
+  "input_ref": "openclaw_action_email.json",
+  "phase": "pre_action",
+  "decision": "defer",
+  "allowed_to_execute": false,
+  "requires_human_review": true,
+  "pic_used": false,
+  "pic_accepted": null,
+  "pic_operationally_usable": null,
+  "pic_settled": null,
+  "missing_obligations": ["final message review", "recipient approval"],
+  "residual_summary": {},
+  "pic_diagnostics": {
+    "agent_tasks": [],
+    "route_execution_requests": [],
+    "residual_ledger": [],
+    "provenance_refs": []
+  },
+  "safe_next_steps": ["attach evidence", "add rollback plan", "ask for explicit human confirmation", "reduce action scope", "rerun the check"],
+  "reasons": ["external-effect action has missing evidence", "external-effect action has no evidence refs"],
+  "safety_boundary": [
+    "Generated agent output is a candidate, not verified work.",
+    "This report does not prove correctness, real ASI, external-world truth, or action safety.",
+    "This report does not execute the proposed action.",
+    "This checker does not run commands proposed by an agent.",
+    "PIC accepted=true is not permission to execute.",
+    "settled=false is diagnostic, not a command failure."
+  ]
+}

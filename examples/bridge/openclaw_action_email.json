@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1.0",
+  "proposal_id": "proposal-email-001",
+  "phase": "pre_action",
+  "agent_id": "openclaw-agent",
+  "session_id": "session-example",
+  "action_kind": "email_send",
+  "tool_name": "gmail.send",
+  "summary": "Send a follow-up email to a project contact.",
+  "raw_agent_text": "I can send the follow-up now.",
+  "tool_arguments": {
+    "to": "recipient@example.com",
+    "subject": "Follow-up",
+    "body_ref": "draft:follow-up"
+  },
+  "external_effect": true,
+  "risk_level": "medium",
+  "evidence_refs": [],
+  "missing_evidence": ["recipient approval", "final message review"],
+  "rollback_plan": "Send a correction email if content is wrong.",
+  "requires_human_confirmation": true
+}

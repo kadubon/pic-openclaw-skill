@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1.0",
+  "claim_id": "claim-result-001",
+  "phase": "post_action",
+  "agent_id": "openclaw-agent",
+  "action_kind": "test_run",
+  "claimed_result": "All tests passed.",
+  "evidence_refs": [],
+  "logs_refs": [],
+  "rollback_available": true,
+  "unresolved_items": ["test log not attached"]
+}

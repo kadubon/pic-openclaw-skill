@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1.0",
+  "proposal_id": "proposal-shell-001",
+  "phase": "pre_action",
+  "agent_id": "openclaw-agent",
+  "session_id": "session-example",
+  "action_kind": "shell_command",
+  "tool_name": "exec",
+  "summary": "Run a maintenance command with unclear contents.",
+  "raw_agent_text": "Run the command I suggested earlier.",
+  "tool_arguments": {},
+  "external_effect": true,
+  "risk_level": "high",
+  "evidence_refs": [],
+  "missing_evidence": ["exact command contents", "expected output", "safe rollback"],
+  "rollback_plan": null,
+  "requires_human_confirmation": true
+}

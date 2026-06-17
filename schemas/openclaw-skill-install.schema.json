@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenClawSkillInstall",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["install_id", "phase", "skill_name", "requested_permissions", "install_steps", "network_required", "shell_required", "file_write_required", "credential_access_required", "risk_level"],
+  "properties": {
+    "schema_version": {"type": "string", "default": "0.1.0"},
+    "install_id": {"type": "string"},
+    "phase": {"const": "skill_install"},
+    "agent_id": {"type": ["string", "null"]},
+    "skill_name": {"type": "string"},
+    "source_ref": {"type": ["string", "null"]},
+    "requested_permissions": {"type": "array", "items": {"type": "string"}},
+    "install_steps": {"type": "array", "items": {"type": "string"}},
+    "network_required": {"type": "boolean"},
+    "shell_required": {"type": "boolean"},
+    "file_write_required": {"type": "boolean"},
+    "credential_access_required": {"type": "boolean"},
+    "risk_level": {"enum": ["low", "medium", "high", "critical"]}
+  }
+}

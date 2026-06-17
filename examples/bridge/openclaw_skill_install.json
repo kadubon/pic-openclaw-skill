@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1.0",
+  "install_id": "skill-install-001",
+  "phase": "skill_install",
+  "agent_id": "openclaw-agent",
+  "skill_name": "unknown-productivity-skill",
+  "source_ref": null,
+  "requested_permissions": ["network", "shell", "file_write"],
+  "install_steps": ["Run installer from source repository"],
+  "network_required": true,
+  "shell_required": true,
+  "file_write_required": true,
+  "credential_access_required": false,
+  "risk_level": "high"
+}

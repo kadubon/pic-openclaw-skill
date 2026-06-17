@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1.0",
+  "proposal_id": "proposal-file-write-001",
+  "phase": "pre_action",
+  "agent_id": "openclaw-agent",
+  "session_id": "session-example",
+  "action_kind": "file_write",
+  "tool_name": "write_file",
+  "summary": "Write a small generated config file inside the current workspace.",
+  "raw_agent_text": "I will write the config file.",
+  "tool_arguments": {
+    "path": "config/example.json",
+    "content_ref": "draft-config"
+  },
+  "external_effect": true,
+  "risk_level": "low",
+  "evidence_refs": ["user-request:config"],
+  "missing_evidence": [],
+  "rollback_plan": "Delete config/example.json or restore from previous version.",
+  "requires_human_confirmation": false
+}

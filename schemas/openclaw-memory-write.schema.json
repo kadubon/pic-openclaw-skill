@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenClawMemoryWrite",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["memory_id", "phase", "content", "claim_type", "evidence_refs", "should_be_persistent", "risk_level"],
+  "properties": {
+    "schema_version": {"type": "string", "default": "0.1.0"},
+    "memory_id": {"type": "string"},
+    "phase": {"const": "memory_write"},
+    "agent_id": {"type": ["string", "null"]},
+    "content": {"type": "string"},
+    "claim_type": {"enum": ["fact", "preference", "plan", "hypothesis", "unknown"]},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "should_be_persistent": {"type": "boolean"},
+    "risk_level": {"enum": ["low", "medium", "high", "critical"]}
+  }
+}

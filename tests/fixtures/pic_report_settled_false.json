@@ -1,0 +1,9 @@
+{
+  "accepted": true,
+  "operationally_usable": true,
+  "settled": false,
+  "residual_summary": {},
+  "runtime_report": {
+    "missing_obligations": []
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenClawActionProposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["proposal_id", "phase", "action_kind", "summary", "tool_arguments", "external_effect", "risk_level", "requires_human_confirmation"],
+  "properties": {
+    "schema_version": {"type": "string", "default": "0.1.0"},
+    "proposal_id": {"type": "string"},
+    "phase": {"const": "pre_action"},
+    "agent_id": {"type": ["string", "null"]},
+    "session_id": {"type": ["string", "null"]},
+    "action_kind": {"type": "string"},
+    "tool_name": {"type": ["string", "null"]},
+    "summary": {"type": "string"},
+    "raw_agent_text": {"type": ["string", "null"]},
+    "tool_arguments": {"type": "object"},
+    "external_effect": {"type": "boolean"},
+    "risk_level": {"enum": ["low", "medium", "high", "critical"]},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "missing_evidence": {"type": "array", "items": {"type": "string"}},
+    "rollback_plan": {"type": ["string", "null"]},
+    "requires_human_confirmation": {"type": "boolean"}
+  }
+}
