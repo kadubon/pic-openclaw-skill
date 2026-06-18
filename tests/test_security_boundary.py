@@ -52,6 +52,7 @@ def test_docs_match_openclaw_install_and_clawhub_boundaries() -> None:
         "openclaw skills install git:kadubon/pic-openclaw-skill@main"
     )
     assert "requires a separate explicit license decision" in combined
+    assert "clawhub/pic-residual-guard/" in combined
     assert "clawhub publish" not in combined.lower()
 
 
@@ -118,6 +119,7 @@ def test_publication_and_licensing_docs_exist() -> None:
     assert (ROOT / "docs" / "publication-checklist.md").exists()
     assert (ROOT / "docs" / "licensing.md").exists()
     assert (ROOT / "skill" / "pic-residual-guard" / "LICENSE").exists()
+    assert (ROOT / "clawhub" / "pic-residual-guard" / "LICENSE").exists()
 
 
 def test_feedback_has_no_secret_or_local_path_leaks() -> None:

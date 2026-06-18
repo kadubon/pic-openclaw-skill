@@ -149,9 +149,19 @@ This skill is not a replacement for OpenClaw sandboxing, approvals, allowlists, 
 
 Feedback output is sanitized to avoid local absolute paths and secrets. Generated agent output is a candidate, not verified work.
 
+## ClawHub submission bundle
+
+The repository includes a minimal ClawHub-ready bundle at:
+
+`clawhub/pic-residual-guard/`
+
+Submit that directory, not the repository root.
+
+The repository root remains Apache-2.0. The ClawHub bundle is MIT-0. The ClawHub bundle contains only the skill text, a small README, and a bundle-local license. It does not include the Python helper CLI, tests, schemas, or optional PIC-backed tooling.
+
 ## ClawHub note
 
-This repository is Apache-2.0. If a skill registry requires a different license for submitted skill text, publish only after an explicit license decision. This repository intentionally documents Git/local skill installation and does not include registry publication steps. See `docs/licensing.md`.
+This repository is Apache-2.0 at the root and includes a separate MIT-0 ClawHub submission bundle. ClawHub publication remains a manual operator step and has not happened merely because the bundle exists. See `docs/licensing.md` and `docs/clawhub-readiness.md`.
 
 ## Relationship to Percolation Inversion Compiler
 
@@ -165,7 +175,7 @@ Search terms: OpenClaw skill, OpenClaw agent safety, AI agent action checking, A
 
 Current release: v0.1.0.
 
-This release is intended for manual OpenClaw skill installation and local testing. It is not yet an official ClawHub submission package. Skill-only mode is the recommended first path. PIC-backed mode is optional and requires trusted local operator configuration.
+This release is intended for manual OpenClaw skill installation, local testing, and manual ClawHub submission preparation. It has not been published to ClawHub by this repository workflow. Skill-only mode is the recommended first path. PIC-backed mode is optional and requires trusted local operator configuration.
 
 ## Examples
 

@@ -50,7 +50,13 @@ uv run pic-openclaw-check \
 - It does not prove correctness, real ASI, external-world truth, or action safety.
 - It does not replace OpenClaw sandboxing, approvals, allowlists, or tool policy.
 - It is not an automatic OpenClaw hook and not an OpenClaw core patch.
-- It is not a ClawHub publication package yet.
+- It is not automatically published to ClawHub.
+
+## ClawHub bundle
+
+A minimal ClawHub submission bundle is included at `clawhub/pic-residual-guard/`.
+
+The bundle is intentionally skill-only and MIT-0. The repository root remains Apache-2.0.
 
 ## Verification commands
 
@@ -66,7 +72,7 @@ uv build
 
 - Not an OpenClaw core patch.
 - Not an automatic hook.
-- Not a ClawHub publication package yet.
+- Not automatically published to ClawHub.
 - No guarantee of OpenClaw Git skill install syntax across OpenClaw versions.
 - PIC-backed mode requires trusted local user configuration.
 - Does not replace sandboxing, user approval, or allowlists.

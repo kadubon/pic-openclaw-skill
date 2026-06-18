@@ -23,7 +23,7 @@ openclaw skills install git:kadubon/pic-openclaw-skill@main
 
 Use `~/.openclaw/skills/pic-residual-guard` only for a shared managed skill visible across local agents. OpenClaw discovers `SKILL.md` under configured skill roots. The root `SKILL.md` is provided for Git/local direct install compatibility; `skill/pic-residual-guard/SKILL.md` is provided for copy-based installs.
 
-ClawHub or registry publication is out of scope for this Apache-2.0 repository. If a registry requires a different license for skill text, publishing this skill requires a separate explicit license decision. See `docs/licensing.md`.
+This repository includes a separate MIT-0 ClawHub submission bundle under `clawhub/pic-residual-guard/`. Runtime setup does not require ClawHub, and publication remains a manual operator step. Any registry path outside that bundle requires a separate explicit license decision. See `docs/licensing.md`.
 
 ## Optional PIC-backed mode
 
