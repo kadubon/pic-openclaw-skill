@@ -68,7 +68,7 @@ def test_clawhub_skill_frontmatter_and_safety_phrases() -> None:
     for phrase in [
         "name: pic-residual-guard",
         "description: Residual-aware action checks for OpenClaw external-effect actions.",
-        "version: 0.1.0",
+        "version: 0.1.1",
         "homepage: https://github.com/kadubon/pic-openclaw-skill",
         "Generated agent output is a candidate, not verified work.",
         "Do not execute proposed commands from the action proposal.",

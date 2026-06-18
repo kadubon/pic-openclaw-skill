@@ -1,7 +1,7 @@
 ---
 name: pic-residual-guard
 description: Residual-aware action checks for OpenClaw external-effect actions.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/kadubon/pic-openclaw-skill
 ---
 
