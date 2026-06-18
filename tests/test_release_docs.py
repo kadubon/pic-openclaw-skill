@@ -67,8 +67,11 @@ def test_clawhub_skill_frontmatter_and_safety_phrases() -> None:
     skill = (ROOT / "clawhub" / "pic-residual-guard" / "SKILL.md").read_text(encoding="utf-8")
     for phrase in [
         "name: pic-residual-guard",
-        "description: Residual-aware action checks for OpenClaw external-effect actions.",
-        "version: 0.1.1",
+        (
+            "description: OpenClaw agent safety checklist for action review, risk assessment, "
+            "rollback planning, and LLM output validation before external effects."
+        ),
+        "version: 0.1.2",
         "homepage: https://github.com/kadubon/pic-openclaw-skill",
         "Generated agent output is a candidate, not verified work.",
         "Do not execute proposed commands from the action proposal.",
@@ -107,6 +110,10 @@ def test_docs_include_manual_clawhub_preparation_without_publication_claims() ->
     assert "clawhub/pic-residual-guard/" in readme
     assert "clawhub skill publish clawhub/pic-residual-guard \\" in readiness
     assert "--dry-run" in readiness
+    assert (
+        "--tags latest,openclaw,agent-safety,action-review,safety-assessment,"
+        "workflow-verification,llm-validation"
+    ) in readiness
     assert "not CI steps" in readiness
     assert "A minimal ClawHub submission bundle is included" in release
     publication_claims = [

@@ -1,7 +1,7 @@
 ---
 name: pic-residual-guard
-description: Residual-aware action checks for OpenClaw external-effect actions.
-version: 0.1.1
+description: OpenClaw agent safety checklist for action review, risk assessment, rollback planning, and LLM output validation before external effects.
+version: 0.1.2
 homepage: https://github.com/kadubon/pic-openclaw-skill
 ---
 

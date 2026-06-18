@@ -25,7 +25,8 @@ Do not run this in CI. Run it only after installing and authenticating the ClawH
 clawhub skill publish clawhub/pic-residual-guard \
   --slug pic-residual-guard \
   --name "PIC Residual Guard" \
-  --version 0.1.1 \
+  --version 0.1.2 \
+  --tags latest,openclaw,agent-safety,action-review,safety-assessment,workflow-verification,llm-validation \
   --changelog "Initial public release: residual-aware action checks for OpenClaw agents." \
   --dry-run
 ```
@@ -38,7 +39,8 @@ Run this only after the dry run output and current ClawHub requirements have bee
 clawhub skill publish clawhub/pic-residual-guard \
   --slug pic-residual-guard \
   --name "PIC Residual Guard" \
-  --version 0.1.1 \
+  --version 0.1.2 \
+  --tags latest,openclaw,agent-safety,action-review,safety-assessment,workflow-verification,llm-validation \
   --changelog "Initial public release: residual-aware action checks for OpenClaw agents."
 ```
 
