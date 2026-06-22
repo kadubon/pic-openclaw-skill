@@ -18,7 +18,7 @@ def test_docs_state_security_boundary() -> None:
         "does not prove correctness",
         "does not prove real ASI",
         "does not validate external-world truth",
-        "PIC reports are diagnostic artifacts",
+        "PIC reports are review artifacts",
         "Users remain responsible for action approval",
     ]:
         assert phrase in text
@@ -87,12 +87,35 @@ def test_docs_describe_pic_diagnostics_as_non_executable() -> None:
     for phrase in [
         "agent_tasks",
         "route_execution_requests",
+        "workflow_usable",
+        "next_safe_actions",
         "residual_ledger",
         "provenance",
-        "diagnostic only",
-        "not execution instructions",
+        "review data",
+        "not commands",
     ]:
         assert phrase in combined
+
+
+def test_theory_alignment_uses_plain_language_safety_mapping() -> None:
+    text = (ROOT / "docs" / "theory-alignment.md").read_text(encoding="utf-8")
+    for phrase in [
+        "candidate work",
+        "possible action path",
+        "missing evidence",
+        "rollback or undo",
+        "trace logs",
+        "error budgets",
+        "suggested next steps",
+        "review bandwidth",
+        "reusable only after",
+        "not execution approval",
+        "unresolved work",
+        "not commands",
+        "does not prove real ASI",
+        "external-world truth",
+    ]:
+        assert phrase in text
 
 
 def test_pic_command_docs_state_trusted_operator_boundary() -> None:

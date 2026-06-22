@@ -14,7 +14,7 @@ Covered threats:
 - overtrusting `accepted=true`
 - misreading `settled=false`
 
-Mitigations are advisory and deterministic: preserve missing obligations, block credential exposure, block unknown shell commands, defer missing evidence, and never execute proposed actions.
+Mitigations are advisory and deterministic: preserve missing checks, block credential exposure, block unknown shell commands, defer missing evidence, and never execute proposed actions.
 
 ## Malicious Skill Install
 
@@ -42,7 +42,7 @@ Completion claims without evidence refs or logs remain candidate work.
 
 ## PIC Report Overtrust
 
-PIC reports are diagnostics. `agent_tasks`, `route_execution_requests`, `residual_ledger`, and `provenance` are preserved as diagnostic text only.
+PIC reports are review data. `agent_tasks`, `route_execution_requests`, `residual_ledger`, and `provenance` are preserved as review text only.
 
 ## `accepted=true` Overtrust
 
@@ -50,7 +50,7 @@ PIC `accepted=true` is not permission to execute an OpenClaw action.
 
 ## `settled=false` Misread As Error
 
-PIC `settled=false` is diagnostic, not a command failure.
+PIC `settled=false` means review is incomplete, not a command failure.
 
 OpenClaw-side controls remain required. This skill does not replace sandboxing, approval prompts, tool policy, exec deny/ask settings, workspace-only filesystem policy, or skill allowlists.
 

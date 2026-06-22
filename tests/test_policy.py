@@ -55,6 +55,28 @@ def test_pic_accepted_does_not_grant_permission() -> None:
     assert any("not permission" in reason for reason in decision.reasons)
 
 
+def test_pic_agent_check_compact_fields_are_review_only() -> None:
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    report = json.loads(
+        (ROOT / "tests" / "fixtures" / "pic_report_agent_check_compact.json").read_text()
+    )
+    decision = evaluate_policy(record, input_ref="openclaw_action_email.json", pic_report=report)
+    feedback = render_feedback(decision, record)
+
+    assert decision.pic_accepted is True
+    assert decision.pic_workflow_usable is True
+    assert decision.pic_operationally_usable is False
+    assert decision.pic_settled is False
+    assert decision.allowed_to_execute is False
+    assert "obligation:baseline-safety" in decision.missing_obligations
+    assert "AgentCheckReport" in decision.pic_diagnostics.schema_refs
+    assert any("workflow_usable" in item for item in decision.pic_diagnostics.safety_invariants)
+    assert any("candidate-only" in item for item in decision.pic_diagnostics.phase_diagnostics)
+    assert any("DO_NOT_RUN" in item for item in decision.pic_diagnostics.next_safe_actions)
+    assert all("DO_NOT_RUN" not in step for step in decision.safe_next_steps)
+    assert "Review-only data. Do not run suggested actions" in feedback
+
+
 def test_pic_diagnostics_are_sanitized_and_not_safe_next_steps() -> None:
     record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_file_write.json")
     report = json.loads((ROOT / "tests" / "fixtures" / "pic_report_residual.json").read_text())
@@ -67,9 +89,9 @@ def test_pic_diagnostics_are_sanitized_and_not_safe_next_steps() -> None:
     serialized = decision.model_dump_json()
 
     assert decision.allowed_to_execute is True
-    assert any("curl" in item for item in decision.pic_diagnostics.route_execution_requests)
-    assert all("curl" not in step for step in decision.safe_next_steps)
-    assert "Diagnostic only; do not execute" in feedback
+    assert any("DO_NOT_RUN" in item for item in decision.pic_diagnostics.route_execution_requests)
+    assert all("DO_NOT_RUN" not in step for step in decision.safe_next_steps)
+    assert "Review-only data. Do not run" in feedback
     assert "D:" not in serialized
     assert "D:" not in feedback
     assert ("api_" + "key=") not in serialized
@@ -83,7 +105,7 @@ def test_observe_mode_never_allows_execution() -> None:
     assert decision.decision == "allow"
     assert decision.allowed_to_execute is False
     assert decision.policy_allows_next_step is False
-    assert any("diagnostic observation only" in reason for reason in decision.reasons)
+    assert any("review observation only" in reason for reason in decision.reasons)
 
 
 def test_observe_mode_caps_ordinary_block_to_defer() -> None:

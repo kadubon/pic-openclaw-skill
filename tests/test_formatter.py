@@ -13,7 +13,7 @@ def test_feedback_renderer_includes_required_safety_phrases() -> None:
     feedback = render_feedback(decision, record)
     required = [
         "Generated agent output is a candidate, not verified work.",
-        "`settled=false` is diagnostic, not a command failure.",
+        "`settled=false` means review is incomplete, not a command failure.",
         "does not prove correctness, real ASI, external-world truth, or action safety",
         "It does not execute the proposed action.",
     ]

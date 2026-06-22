@@ -1,34 +1,56 @@
 {
-  "schema_version": "0.1.0",
+  "allowed_to_execute": false,
+  "decision": "defer",
   "decision_id": "bridge-decision:example",
   "input_ref": "openclaw_action_email.json",
-  "phase": "pre_action",
+  "missing_obligations": [
+    "evidence_refs",
+    "final message review",
+    "recipient approval"
+  ],
   "mode": "advisory",
-  "decision": "defer",
-  "allowed_to_execute": false,
-  "policy_allows_next_step": false,
-  "requires_human_review": true,
-  "requires_user_authorization": true,
-  "pic_used": false,
+  "phase": "pre_action",
   "pic_accepted": null,
-  "pic_operationally_usable": null,
-  "pic_settled": null,
-  "missing_obligations": ["final message review", "recipient approval"],
-  "residual_summary": {},
   "pic_diagnostics": {
     "agent_tasks": [],
-    "route_execution_requests": [],
+    "checked_outputs": [],
+    "next_safe_actions": [],
+    "phase_diagnostics": [],
+    "provenance_refs": [],
     "residual_ledger": [],
-    "provenance_refs": []
+    "route_execution_requests": [],
+    "safety_invariants": [],
+    "schema_refs": [],
+    "unresolved_obligations": [],
+    "workflow_usable": null
   },
-  "safe_next_steps": ["attach evidence", "add rollback plan", "ask for explicit human confirmation", "reduce action scope", "rerun the check"],
-  "reasons": ["external-effect action has missing evidence", "external-effect action has no evidence refs"],
+  "pic_operationally_usable": null,
+  "pic_settled": null,
+  "pic_used": false,
+  "pic_workflow_usable": null,
+  "policy_allows_next_step": false,
+  "reasons": [
+    "advisory decision does not bypass OpenClaw approvals",
+    "external-effect action has missing evidence",
+    "external-effect action has no evidence refs"
+  ],
+  "requires_human_review": true,
+  "requires_user_authorization": true,
+  "residual_summary": {},
+  "safe_next_steps": [
+    "attach evidence",
+    "add rollback plan",
+    "ask for explicit human confirmation",
+    "reduce action scope",
+    "rerun the check"
+  ],
   "safety_boundary": [
     "Generated agent output is a candidate, not verified work.",
     "This report does not prove correctness, real ASI, external-world truth, or action safety.",
     "This report does not execute the proposed action.",
     "This checker does not run commands proposed by an agent.",
     "PIC accepted=true is not permission to execute.",
-    "settled=false is diagnostic, not a command failure."
-  ]
+    "settled=false means review is incomplete, not a command failure."
+  ],
+  "schema_version": "0.1.0"
 }

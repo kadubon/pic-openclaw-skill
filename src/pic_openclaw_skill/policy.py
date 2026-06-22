@@ -56,6 +56,7 @@ def evaluate_policy(
     decision = _base_decision(record, reasons, missing)
     pic_used = pic_report is not None or pic_command_failed
     pic_accepted: bool | None = None
+    pic_workflow_usable: bool | None = None
     pic_operationally_usable: bool | None = None
     pic_settled: bool | None = None
     residual_summary: dict[str, float] = {}
@@ -67,17 +68,23 @@ def evaluate_policy(
 
     if pic_report is not None:
         pic_accepted = _as_bool(pic_report.get("accepted"))
+        pic_workflow_usable = _as_bool(pic_report.get("workflow_usable"))
         pic_operationally_usable = _as_bool(pic_report.get("operationally_usable"))
         pic_settled = _as_bool(pic_report.get("settled"))
         residual_summary = _float_mapping(pic_report.get("residual_summary"))
         pic_diagnostics = _pic_diagnostics_from_report(pic_report)
         missing.extend(_missing_from_pic(pic_report))
         if pic_settled is False:
-            reasons.append("PIC settled=false is diagnostic, not a command failure")
+            reasons.append("PIC settled=false means review is incomplete, not a command failure")
         if pic_accepted is True:
             reasons.append("PIC accepted=true is not permission to execute")
+        if pic_workflow_usable is True:
+            reasons.append("PIC workflow_usable=true is routing-only review context")
+        if pic_workflow_usable is False:
+            reasons.append("PIC workflow_usable=false; preserve review data before reuse")
+            decision = _max_decision(decision, "defer")
         if pic_operationally_usable is False:
-            reasons.append("PIC operationally_usable=false; preserve residuals")
+            reasons.append("PIC operationally_usable=false; preserve unresolved work")
             if getattr(record, "risk_level", "low") in {"high", "critical"}:
                 decision = _max_decision(decision, "defer")
 
@@ -93,6 +100,7 @@ def evaluate_policy(
         residual_summary=residual_summary,
         pic_used=pic_used,
         pic_accepted=pic_accepted,
+        pic_workflow_usable=pic_workflow_usable,
         pic_operationally_usable=pic_operationally_usable,
         pic_settled=pic_settled,
         pic_diagnostics=pic_diagnostics,
@@ -107,7 +115,7 @@ def _apply_mode(
     missing: list[str],
 ) -> DecisionName:
     if mode == "observe":
-        reasons.append("diagnostic observation only")
+        reasons.append("review observation only")
         if decision == "block" and not _has_hard_hazard(record):
             return "defer"
         return decision
@@ -352,21 +360,29 @@ def _float_mapping(value: object) -> dict[str, float]:
 
 def _missing_from_pic(report: Mapping[str, object]) -> list[str]:
     missing: list[str] = []
-    runtime = report.get("runtime_report")
-    if isinstance(runtime, Mapping):
-        raw = runtime.get("missing_obligations")
-        if isinstance(raw, list):
-            missing.extend(str(item) for item in raw)
-    raw_top = report.get("missing_obligations")
-    if isinstance(raw_top, list):
-        missing.extend(str(item) for item in raw_top)
+    for source in _pic_sources(report):
+        for key in ("missing_obligations", "unresolved_obligations", "settled_blockers"):
+            raw = source.get(key)
+            if isinstance(raw, list):
+                missing.extend(str(item) for item in raw)
     return missing
 
 
 def _pic_diagnostics_from_report(report: Mapping[str, object]) -> PicDiagnostics:
-    runtime = report.get("runtime_report")
-    runtime_report = runtime if isinstance(runtime, Mapping) else {}
+    runtime_report = _runtime_report_from_pic(report)
     return PicDiagnostics(
+        workflow_usable=_as_bool(report.get("workflow_usable")),
+        unresolved_obligations=_diagnostic_items(
+            report,
+            runtime_report,
+            "unresolved_obligations",
+            fallback_key="missing_obligations",
+        ),
+        next_safe_actions=_diagnostic_items(report, runtime_report, "next_safe_actions"),
+        schema_refs=_diagnostic_items(report, runtime_report, "schema_refs"),
+        safety_invariants=_diagnostic_items(report, runtime_report, "safety_invariants"),
+        checked_outputs=_checked_output_items(report),
+        phase_diagnostics=_phase_diagnostic_items(report, runtime_report),
         agent_tasks=_diagnostic_items(report, runtime_report, "agent_tasks"),
         route_execution_requests=_diagnostic_items(
             report, runtime_report, "route_execution_requests"
@@ -379,6 +395,55 @@ def _pic_diagnostics_from_report(report: Mapping[str, object]) -> PicDiagnostics
             fallback_key="provenance",
         ),
     )
+
+
+def _runtime_report_from_pic(report: Mapping[str, object]) -> Mapping[str, object]:
+    runtime = report.get("runtime_report")
+    if isinstance(runtime, Mapping):
+        return runtime
+    intake = report.get("intake_report")
+    if isinstance(intake, Mapping):
+        nested_runtime = intake.get("runtime_report")
+        if isinstance(nested_runtime, Mapping):
+            return nested_runtime
+    return {}
+
+
+def _pic_sources(report: Mapping[str, object]) -> list[Mapping[str, object]]:
+    sources: list[Mapping[str, object]] = [report]
+    runtime = _runtime_report_from_pic(report)
+    if runtime:
+        sources.append(runtime)
+    intake = report.get("intake_report")
+    if isinstance(intake, Mapping):
+        sources.append(intake)
+    return sources
+
+
+def _checked_output_items(report: Mapping[str, object]) -> list[str]:
+    raw = report.get("checked_outputs")
+    if not isinstance(raw, Mapping):
+        return []
+    return _cap_diagnostic_items([f"{key}: {value}" for key, value in raw.items()])
+
+
+def _phase_diagnostic_items(
+    report: Mapping[str, object], runtime_report: Mapping[str, object]
+) -> list[str]:
+    raw_items: list[object] = []
+    for source in (report, runtime_report):
+        for key in (
+            "phase_gap_vector",
+            "top_bottlenecks",
+            "candidate_only_reasons",
+            "cannot_promote_because",
+            "settled_blockers",
+            "phase_control_audit",
+            "frontier_debt_report",
+            "bottleneck_witness_reports",
+        ):
+            raw_items.extend(_iter_diagnostic_values(source.get(key)))
+    return _cap_diagnostic_items(raw_items)
 
 
 def _diagnostic_items(

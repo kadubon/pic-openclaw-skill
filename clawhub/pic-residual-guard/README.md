@@ -1,6 +1,6 @@
 # PIC Residual Guard
 
-PIC Residual Guard is an OpenClaw skill for residual-aware action checks.
+PIC Residual Guard is an OpenClaw skill for review-first action checks.
 
 Generated agent output is a candidate, not verified work.
 

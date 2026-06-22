@@ -10,7 +10,7 @@ def test_skill_exists_and_contains_required_safety_phrases() -> None:
     ]
     required = [
         "name: pic-residual-guard",
-        "version: 0.1.0",
+        "version: 0.2.0",
         "homepage: https://github.com/kadubon/pic-openclaw-skill",
         "PIC Residual Guard",
         "Generated agent output is a candidate, not verified work.",
@@ -42,7 +42,7 @@ def test_skill_frontmatter_does_not_gate_skill_only_mode() -> None:
     frontmatter = text.split("---", 2)[1]
     assert "name: pic-residual-guard" in frontmatter
     assert "description:" in frontmatter
-    assert "version: 0.1.0" in frontmatter
+    assert "version: 0.2.0" in frontmatter
     assert "homepage:" in frontmatter
     assert "requires:" not in frontmatter
     assert "bins:" not in frontmatter

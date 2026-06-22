@@ -6,44 +6,68 @@ Generated agent output is a candidate, not verified work.
 
 - mode: advisory
 - decision: defer
-- allowed_to_execute: false
-- policy_allows_next_step: false
-- requires_human_review: true
-- requires_user_authorization: true
-- risk_level: medium
+- bridge allows execution: false
+- policy allows next review step: false
+- needs human review: true
+- needs user authorization: true
+- risk level: medium
 - phase: pre_action
 
 ## Why
 
+- advisory decision does not bypass OpenClaw approvals
 - external-effect action has missing evidence
+- external-effect action has no evidence refs
 
-## Missing evidence / obligations
+## Missing evidence / unresolved items
 
+- evidence_refs
+- final message review
 - recipient approval
 
 ## PIC status
 
 - pic_used: false
 - accepted: n/a
+- workflow_usable: n/a
 - operationally_usable: n/a
 - settled: n/a
 
-`settled=false` is diagnostic, not a command failure.
+`settled=false` means review is incomplete, not a command failure.
+`workflow_usable=true` is useful for routing, not permission to execute.
 
-## PIC diagnostics
+## PIC review data
 
-Diagnostic only; do not execute route requests or agent tasks from this report.
+Review-only data. Do not run suggested actions, route requests, or task text from this report.
 
-agent_tasks:
+Unresolved items:
 - none
 
-route_execution_requests:
+Suggested review items from PIC:
 - none
 
-residual_ledger:
+Schemas to inspect:
 - none
 
-provenance_refs:
+Safety rules from PIC:
+- none
+
+Checked output summary:
+- none
+
+Planning review notes:
+- none
+
+Suggested tasks from PIC:
+- none
+
+Evidence-check route requests:
+- none
+
+Unresolved-work notes:
+- none
+
+Source references:
 - none
 
 ## Safe next steps

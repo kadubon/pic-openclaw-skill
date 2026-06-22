@@ -25,6 +25,7 @@ def make_decision(
     residual_summary: dict[str, float] | None = None,
     pic_used: bool = False,
     pic_accepted: bool | None = None,
+    pic_workflow_usable: bool | None = None,
     pic_operationally_usable: bool | None = None,
     pic_settled: bool | None = None,
     pic_diagnostics: PicDiagnostics | None = None,
@@ -45,6 +46,7 @@ def make_decision(
         requires_user_authorization=requires_user_authorization,
         pic_used=pic_used,
         pic_accepted=pic_accepted,
+        pic_workflow_usable=pic_workflow_usable,
         pic_operationally_usable=pic_operationally_usable,
         pic_settled=pic_settled,
         missing_obligations=sorted(
@@ -91,6 +93,13 @@ def _sanitize_pic_diagnostics(diagnostics: PicDiagnostics | None) -> PicDiagnost
     if diagnostics is None:
         return PicDiagnostics()
     return PicDiagnostics(
+        workflow_usable=diagnostics.workflow_usable,
+        unresolved_obligations=_sanitize_text_list(diagnostics.unresolved_obligations),
+        next_safe_actions=_sanitize_text_list(diagnostics.next_safe_actions),
+        schema_refs=_sanitize_text_list(diagnostics.schema_refs),
+        safety_invariants=_sanitize_text_list(diagnostics.safety_invariants),
+        checked_outputs=_sanitize_text_list(diagnostics.checked_outputs),
+        phase_diagnostics=_sanitize_text_list(diagnostics.phase_diagnostics),
         agent_tasks=_sanitize_text_list(diagnostics.agent_tasks),
         route_execution_requests=_sanitize_text_list(diagnostics.route_execution_requests),
         residual_ledger=_sanitize_text_list(diagnostics.residual_ledger),

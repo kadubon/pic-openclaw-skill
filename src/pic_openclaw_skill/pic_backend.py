@@ -7,6 +7,7 @@ import shlex
 import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Literal
 
 from pic_openclaw_skill.formatter import render_candidate_text
 from pic_openclaw_skill.records import InputRecord
@@ -53,10 +54,11 @@ def run_pic_backend(
     pic_repo: Path | None,
     pic_command: str,
     profile: str,
+    entrypoint: Literal["agent-check", "agent-intake"] = "agent-check",
     pic_report_path: Path | None = None,
     timeout_seconds: float = 120,
 ) -> dict[str, object]:
-    """Run local PIC agent intake against rendered candidate text."""
+    """Run local PIC agent check against rendered candidate text."""
 
     cwd: Path | None = None
     if pic_repo is not None:
@@ -75,17 +77,13 @@ def run_pic_backend(
             report_path = pic_report_path.resolve()
             report_path.parent.mkdir(parents=True, exist_ok=True)
         candidate_text.write_text(render_candidate_text(record), encoding="utf-8")
-        command = [
-            *command_parts,
-            "agent",
-            "intake",
-            "--text-file",
-            str(candidate_text),
-            "--profile",
-            profile,
-            "--output",
-            str(report_path),
-        ]
+        command = _pic_agent_command(
+            command_parts,
+            entrypoint=entrypoint,
+            candidate_text=candidate_text,
+            profile=profile,
+            report_path=report_path,
+        )
         try:
             completed = subprocess.run(
                 command,
@@ -118,6 +116,43 @@ def run_pic_backend(
     if not isinstance(payload, dict):
         raise PicBackendError("PIC report must be a JSON object")
     return payload
+
+
+def _pic_agent_command(
+    command_parts: list[str],
+    *,
+    entrypoint: Literal["agent-check", "agent-intake"],
+    candidate_text: Path,
+    profile: str,
+    report_path: Path,
+) -> list[str]:
+    if entrypoint == "agent-check":
+        return [
+            *command_parts,
+            "agent",
+            "check",
+            "--compact",
+            "--text-file",
+            str(candidate_text),
+            "--profile",
+            profile,
+            "--no-allow-live-connectors",
+            "--output",
+            str(report_path),
+        ]
+    if entrypoint == "agent-intake":
+        return [
+            *command_parts,
+            "agent",
+            "intake",
+            "--text-file",
+            str(candidate_text),
+            "--profile",
+            profile,
+            "--output",
+            str(report_path),
+        ]
+    raise PicBackendError("--pic-entrypoint must be agent-check or agent-intake")
 
 
 def _safe_tail(text: str) -> str:

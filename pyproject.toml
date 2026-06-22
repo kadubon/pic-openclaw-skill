@@ -1,7 +1,7 @@
 [project]
 name = "pic-openclaw-skill"
-version = "0.1.0"
-description = "PIC OpenClaw Skill: residual-aware action checks for OpenClaw agents."
+version = "0.2.0"
+description = "PIC OpenClaw Skill: review-first action checks for OpenClaw agents."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
@@ -9,9 +9,16 @@ authors = [{ name = "PIC OpenClaw Skill contributors" }]
 keywords = [
   "openclaw",
   "ai-agent-safety",
+  "ai-agent",
+  "ai-safety",
+  "action-review",
   "action-checking",
+  "tool-safety",
+  "approval-check",
   "workflow-verification",
-  "residual-ledger",
+  "llm-validation",
+  "missing-evidence",
+  "unresolved-work",
   "percolation-inversion-compiler",
 ]
 dependencies = [

@@ -32,6 +32,47 @@ def test_pic_backend_can_use_existing_pic_command_without_clone(monkeypatch) -> 
             json.dumps(
                 {
                     "accepted": True,
+                    "workflow_usable": True,
+                    "operationally_usable": False,
+                    "settled": False,
+                    "unresolved_obligations": ["mock-obligation"],
+                    "residual_summary": {"residual": 1.0},
+                    "next_safe_actions": ["inspect only; do not execute"],
+                    "schema_refs": ["AgentCheckReport"],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        class Completed:
+            returncode = 0
+
+        return Completed()
+
+    monkeypatch.setattr("pic_openclaw_skill.pic_backend.subprocess.run", fake_run)
+    record = load_input(ROOT / "examples" / "bridge" / "openclaw_action_email.json")
+    report = run_pic_backend(
+        record,
+        pic_repo=None,
+        pic_command="pic",
+        profile="development",
+    )
+    assert report["accepted"] is True
+    assert calls[0]["cwd"] is None
+    assert calls[0]["command"][:4] == ["pic", "agent", "check", "--compact"]
+    assert "--no-allow-live-connectors" in calls[0]["command"]
+
+
+def test_pic_backend_can_use_legacy_agent_intake_entrypoint(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    calls: list[dict[str, object]] = []
+
+    def fake_run(command, **kwargs):  # type: ignore[no-untyped-def]
+        calls.append({"command": command, **kwargs})
+        output_path = Path(command[command.index("--output") + 1])
+        output_path.write_text(
+            json.dumps(
+                {
+                    "accepted": True,
                     "operationally_usable": False,
                     "settled": False,
                     "residual_summary": {"residual": 1.0},
@@ -53,6 +94,7 @@ def test_pic_backend_can_use_existing_pic_command_without_clone(monkeypatch) -> 
         pic_repo=None,
         pic_command="pic",
         profile="development",
+        entrypoint="agent-intake",
     )
     assert report["accepted"] is True
     assert calls[0]["cwd"] is None
@@ -69,6 +111,7 @@ def test_pic_backend_uses_pic_repo_as_cwd_when_configured(monkeypatch, tmp_path:
             json.dumps(
                 {
                     "accepted": True,
+                    "workflow_usable": True,
                     "operationally_usable": True,
                     "settled": False,
                     "residual_summary": {},
@@ -92,7 +135,7 @@ def test_pic_backend_uses_pic_repo_as_cwd_when_configured(monkeypatch, tmp_path:
         profile="development",
     )
     assert calls[0]["cwd"] == tmp_path.resolve()
-    assert calls[0]["command"][:5] == ["uv", "run", "pic", "agent", "intake"]
+    assert calls[0]["command"][:6] == ["uv", "run", "pic", "agent", "check", "--compact"]
 
 
 def test_pic_backend_creates_pic_report_parent(monkeypatch, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]

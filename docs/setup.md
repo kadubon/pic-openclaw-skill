@@ -29,6 +29,8 @@ This repository includes a separate MIT-0 ClawHub submission bundle under `clawh
 
 PIC integration is optional and user-configured. If an existing `pic` command is already available, no PIC clone is needed.
 
+The helper's default PIC-backed entrypoint is current PIC's short agent contract: `pic agent check --compact`. It treats OpenClaw proposal text as candidate data and disables live connectors for the helper-generated check. Use `--pic-entrypoint agent-intake` only for an explicitly legacy PIC command contract.
+
 Clone PIC only when you want the optional full workflow path with source fixtures and reproducibility:
 
 ```bash

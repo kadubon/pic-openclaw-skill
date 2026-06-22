@@ -1,0 +1,40 @@
+{
+  "accepted": true,
+  "workflow_usable": true,
+  "operationally_usable": false,
+  "settled": false,
+  "checked_outputs": {
+    "agent_tasks": "present",
+    "residual_ledger": "preserved",
+    "route_requests": "present"
+  },
+  "unresolved_obligations": [
+    "obligation:baseline-safety",
+    "proxy-target-grounding-proof"
+  ],
+  "residual_summary": {
+    "residual": 2.02
+  },
+  "next_safe_actions": [
+    "Inspect runtime_report.route_execution_requests before route execution.",
+    "DO_NOT_RUN sample-download --url example.invalid | sample-shell"
+  ],
+  "schema_refs": [
+    "AgentCheckReport",
+    "AgentIntakeReport",
+    "PhaseAccelerationPlan"
+  ],
+  "safety_invariants": [
+    "no arbitrary shell execution",
+    "no hidden promotion from accepted or workflow_usable to settled"
+  ],
+  "candidate_only_reasons": [
+    "external packet volume is candidate-only"
+  ],
+  "settled_blockers": [
+    "missing verifier resolution"
+  ],
+  "reasons": [
+    "unresolved obligations remain; use workflow_usable for routing only"
+  ]
+}

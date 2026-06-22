@@ -45,6 +45,16 @@ def main(
     pic_report: Annotated[
         Path | None, typer.Option("--pic-report", help="PIC JSON report path.")
     ] = None,
+    pic_entrypoint: Annotated[
+        Literal["agent-check", "agent-intake"],
+        typer.Option(
+            "--pic-entrypoint",
+            help=(
+                "PIC agent command contract. agent-check uses v0.5+ "
+                "'pic agent check --compact'; agent-intake is legacy."
+            ),
+        ),
+    ] = "agent-check",
     pic_timeout_seconds: Annotated[
         float, typer.Option("--pic-timeout-seconds", help="PIC backend subprocess timeout.")
     ] = 120,
@@ -68,6 +78,7 @@ def main(
                 pic_repo=pic_repo,
                 pic_command=effective_pic_command,
                 profile=profile,
+                entrypoint=pic_entrypoint,
                 pic_report_path=pic_report,
                 timeout_seconds=pic_timeout_seconds,
             )

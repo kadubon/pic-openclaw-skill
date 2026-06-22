@@ -32,12 +32,10 @@ def test_no_pic_cli_works_on_examples(tmp_path) -> None:  # type: ignore[no-unty
         assert data["mode"] == "advisory"
         assert data["policy_allows_next_step"] is (data["decision"] in {"allow", "warn"})
         assert data["allowed_to_execute"] is (data["decision"] == "allow")
-        assert data["pic_diagnostics"] == {
-            "agent_tasks": [],
-            "route_execution_requests": [],
-            "residual_ledger": [],
-            "provenance_refs": [],
-        }
+        assert data["pic_diagnostics"]["workflow_usable"] is None
+        assert data["pic_diagnostics"]["agent_tasks"] == []
+        assert data["pic_diagnostics"]["next_safe_actions"] == []
+        assert data["pic_diagnostics"]["phase_diagnostics"] == []
         assert "Generated agent output is a candidate, not verified work." in feedback.read_text(
             encoding="utf-8"
         )
@@ -59,6 +57,7 @@ def test_default_cli_is_skill_only_on_examples(tmp_path) -> None:  # type: ignor
         data = json.loads(output.read_text(encoding="utf-8"))
         assert data["pic_used"] is False
         assert data["mode"] == "advisory"
+        assert data["pic_diagnostics"]["workflow_usable"] is None
         assert data["pic_diagnostics"]["agent_tasks"] == []
         assert data["allowed_to_execute"] is (data["decision"] == "allow")
 

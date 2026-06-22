@@ -78,6 +78,13 @@ class OpenClawSkillInstall(StrictRecord):
 
 
 class PicDiagnostics(StrictRecord):
+    workflow_usable: bool | None = None
+    unresolved_obligations: list[str] = Field(default_factory=list)
+    next_safe_actions: list[str] = Field(default_factory=list)
+    schema_refs: list[str] = Field(default_factory=list)
+    safety_invariants: list[str] = Field(default_factory=list)
+    checked_outputs: list[str] = Field(default_factory=list)
+    phase_diagnostics: list[str] = Field(default_factory=list)
     agent_tasks: list[str] = Field(default_factory=list)
     route_execution_requests: list[str] = Field(default_factory=list)
     residual_ledger: list[str] = Field(default_factory=list)
@@ -97,6 +104,7 @@ class BridgeDecision(StrictRecord):
     requires_user_authorization: bool
     pic_used: bool
     pic_accepted: bool | None = None
+    pic_workflow_usable: bool | None = None
     pic_operationally_usable: bool | None = None
     pic_settled: bool | None = None
     missing_obligations: list[str] = Field(default_factory=list)

@@ -1,35 +1,36 @@
-# Release v0.1.0
+# Release v0.2.0
 
 PIC OpenClaw Skill is a review-first action checking skill for OpenClaw agents.
 
 Generated agent output is a candidate, not verified work.
 
-This first release is for users who want a simple manual safety layer before an OpenClaw agent performs external-effect work such as sending email, running shell commands, writing files, making network requests, storing memory, installing skills, or claiming a task is complete.
+This release updates the skill and helper for current PIC agent check reports while keeping the default OpenClaw path simple: skill-only mode still works without PIC, Python, uv, network access, or a PIC clone.
 
 ## What this release provides
 
-- A compact OpenClaw `PIC Residual Guard` skill.
-- Skill-only mode that works without PIC, Python, uv, network access, or a PIC clone.
-- A helper CLI that can turn action proposals into deterministic JSON decisions and Markdown feedback.
-- Optional PIC-backed review data for users who already have a trusted local `pic` command or PIC source checkout.
-- Conservative `allow`, `warn`, `defer`, and `block` decisions with `observe`, `advisory`, and `enforce` modes.
+- A clearer OpenClaw `PIC Residual Guard` skill written in general terms for agents.
+- Skill-only mode for manual OpenClaw installation.
+- Optional helper CLI with deterministic JSON decisions and Markdown feedback.
+- Current PIC-backed mode using `pic agent check --compact` by default.
+- Optional legacy PIC-backed mode with `--pic-entrypoint agent-intake`.
+- Review-only handling for PIC fields such as `workflow_usable`, `next_safe_actions`, `agent_tasks`, and `route_execution_requests`.
 - Sanitized feedback that avoids local absolute paths and obvious secret patterns.
-- Docs for setup, security boundaries, threat model, licensing, and publication readiness.
+- ClawHub bundle metadata using general search terms for action review, agent safety, workflow verification, and LLM output validation.
 
-## Recommended first use: skill-only mode
+## Recommended first use
 
-Start with manual install. Copy the skill directory into your OpenClaw workspace skill root:
+Start with manual skill-only install:
 
 ```bash
 mkdir -p <workspace>/skills/pic-residual-guard
 cp -R skill/pic-residual-guard/* <workspace>/skills/pic-residual-guard/
 ```
 
-Then review `SKILL.md` and ask OpenClaw to use the PIC Residual Guard before external-effect actions. Skill-only mode is the lowest-friction path and does not require PIC or the helper CLI.
+Then review `SKILL.md` and ask OpenClaw to use the PIC Residual Guard before external-effect actions.
 
 ## Optional PIC-backed mode
 
-PIC-backed mode is optional. Use it only when you have reviewed the skill and have a trusted local PIC command, such as:
+PIC-backed mode is optional. Use it only when you have reviewed the skill and have a trusted local PIC command:
 
 ```bash
 uv run pic-openclaw-check \
@@ -50,7 +51,6 @@ uv run pic-openclaw-check \
 - It does not prove correctness, real ASI, external-world truth, or action safety.
 - It does not replace OpenClaw sandboxing, approvals, allowlists, or tool policy.
 - It is not an automatic OpenClaw hook and not an OpenClaw core patch.
-- It is not automatically published to ClawHub.
 
 ## ClawHub bundle
 
@@ -72,7 +72,6 @@ uv build
 
 - Not an OpenClaw core patch.
 - Not an automatic hook.
-- Not automatically published to ClawHub.
 - No guarantee of OpenClaw Git skill install syntax across OpenClaw versions.
 - PIC-backed mode requires trusted local user configuration.
 - Does not replace sandboxing, user approval, or allowlists.

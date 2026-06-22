@@ -1,17 +1,18 @@
 # PIC OpenClaw Skill
 
-Residual-aware action checks for OpenClaw agents.
+Review-first action checks for OpenClaw agents.
 
-PIC OpenClaw Skill gives an OpenClaw agent a safety checklist before it sends email, runs shell, writes files, calls the network, stores memory, installs skills, or claims work is done. It helps the agent turn a proposed action into reviewable evidence, missing obligations, rollback notes, and a conservative allow/warn/defer/block decision.
+PIC OpenClaw Skill gives an OpenClaw agent a safety checklist before it sends email, runs shell, writes files, calls the network, stores memory, installs skills, or claims work is done. It helps the agent turn a proposed action into reviewable evidence, unresolved items, rollback notes, and a conservative allow/warn/defer/block decision.
 
 What you can do with it:
 
 - install a manual OpenClaw skill that works without Python, uv, PIC, or network access
 - ask OpenClaw to treat proposed actions as candidate work before external effects happen
 - run an optional helper CLI that emits deterministic JSON decisions and Markdown feedback
-- optionally attach local PIC diagnostics when you already have a trusted `pic` command
+- optionally attach local PIC review data when you already have a trusted `pic` command
 
 Generated agent output is a candidate, not verified work.
+PIC `workflow_usable=true` means useful for routing or review, not permission to execute.
 
 This skill does not clone PIC automatically.
 This skill does not install PIC automatically.
@@ -25,9 +26,9 @@ OpenClaw skills can affect local agent behavior. Review `SKILL.md` before use, a
 
 ## What problem this solves
 
-OpenClaw agents can draft shell commands, file writes, network requests, emails, memory writes, and skill installs faster than a human can verify them. This OpenClaw skill adds an autonomous agent guardrail: before an external-effect action is treated as work done, the agent records an agent action proposal, evidence, proof obligations, rollback path, and risk level.
+OpenClaw agents can draft shell commands, file writes, network requests, emails, memory writes, and skill installs faster than a human can verify them. This OpenClaw skill adds an autonomous agent guardrail: before an external-effect action is treated as work done, the agent records an agent action proposal, evidence, missing checks, rollback path, and risk level.
 
-The goal is AI agent action checking, AI workflow verification, LLM output validation, and residual ledger preservation. It is not a generic multi-agent bridge and it is not an action executor.
+The goal is AI agent action checking, AI workflow verification, LLM output validation, and clear handling of unresolved work. It is not a generic multi-agent bridge and it is not an action executor.
 
 ## Quick start: skill-only mode
 
@@ -99,10 +100,11 @@ uv run pic-openclaw-check \
 The checker renders the OpenClaw proposal as candidate text and may run:
 
 ```bash
-uv run pic agent intake --text-file <candidate-text> --profile development --output <pic-report>
+uv run pic agent check --compact --text-file <candidate-text> --profile development --no-allow-live-connectors --output <pic-report>
 ```
 
 It does not execute the proposed OpenClaw action.
+Use `--pic-entrypoint agent-intake` only when you intentionally target a legacy PIC command contract.
 
 ## What counts as an external-effect action
 
@@ -127,15 +129,15 @@ Use `OpenClawSkillInstall` before installing an OpenClaw skill. Skill install sa
 ## Decision meanings
 
 - `allow`: low-risk action with adequate evidence and reversible effects.
-- `warn`: low or medium risk action with residuals that can be safely carried forward.
+- `warn`: low or medium risk action with unresolved items that can be safely carried forward.
 - `defer`: missing evidence, missing rollback plan, missing user confirmation, or external-effect action that needs review.
 - `block`: credential exposure, unsafe shell, destructive file operation, unauthorized network action, skill install with unclear permissions, or any critical risk action without explicit user approval.
 
-`allowed_to_execute` is false unless the bridge policy says the action can proceed. PIC `accepted=true` is diagnostic input, not permission to execute.
+`allowed_to_execute` is false unless the bridge policy says the action can proceed. PIC `accepted=true` is review input, not permission to execute.
 
 The helper has three modes:
 
-- `observe`: diagnostic observation only; `allowed_to_execute=false`.
+- `observe`: review observation only; `allowed_to_execute=false`.
 - `advisory`: default behavior; decisions do not bypass OpenClaw approvals.
 - `enforce`: stronger local bridge policy for credential, shell, destructive, critical, and missing-evidence hazards.
 
@@ -165,17 +167,23 @@ This repository is Apache-2.0 at the root and includes a separate MIT-0 ClawHub 
 
 ## Relationship to Percolation Inversion Compiler
 
-PIC integration is optional and user-configured. PIC is used as a residual ledger and proof obligation diagnostic for candidate text. This repository reads PIC fields such as `accepted`, `operationally_usable`, `settled`, `missing_obligations`, `residual_summary`, `residual_ledger`, `agent_tasks`, `route_execution_requests`, and `provenance` when a PIC command is configured. PIC tasks and route requests are diagnostic only; they are not execution instructions.
+PIC integration is optional and user-configured. PIC is used as review data for candidate text, missing checks, and unresolved work. This repository reads PIC machine fields such as `accepted`, `operationally_usable`, `settled`, `missing_obligations`, `residual_summary`, `residual_ledger`, `agent_tasks`, `route_execution_requests`, and `provenance` when a PIC command is configured. PIC tasks and route requests are review data only; they are not commands.
+
+For PIC v0.5.0 and newer, this repository also preserves `workflow_usable`, `unresolved_obligations`, `next_safe_actions`, `schema_refs`, `safety_invariants`, checked output summaries, and planning review notes. These fields help an operator route review work. They do not grant OpenClaw shell, network, file, browser, repository, or message-send authority.
+
+Plain-language rule: agent output is candidate work. A possible action path is not permission to act. Missing evidence remains an unresolved item. Trace logs describe what was observed, not external-world truth. Suggested next steps are review notes, not a task list to run. A useful local result is not reusable work until evidence, scope, authority, risk, maintenance, and final review checks pass.
+
+See `docs/theory-alignment.md` for the plain-language mapping from the background theory files to OpenClaw skill behavior.
 
 This skill does not claim that PIC proves real ASI, external-world truth, or action safety.
 
-Search terms: OpenClaw skill, OpenClaw agent safety, AI agent action checking, AI workflow verification, autonomous agent guardrail, LLM output validation, residual ledger, proof obligations, agent action proposal, skill install safety, memory write review, PIC integration, Percolation Inversion Compiler.
+Search terms: OpenClaw skill, OpenClaw agent safety, AI agent action checking, AI workflow verification, autonomous agent guardrail, LLM output validation, unresolved work, missing evidence, agent action proposal, skill install safety, memory write review, PIC integration, Percolation Inversion Compiler.
 
 ## Release status
 
-Current release: v0.1.0.
+Current release: v0.2.0.
 
-This release is intended for manual OpenClaw skill installation, local testing, and manual ClawHub submission preparation. It has not been published to ClawHub by this repository workflow. Skill-only mode is the recommended first path. PIC-backed mode is optional and requires trusted local operator configuration.
+This release is intended for manual OpenClaw skill installation, local testing, and ClawHub skill distribution. Skill-only mode is the recommended first path. PIC-backed mode is optional and requires trusted local operator configuration.
 
 ## Examples
 

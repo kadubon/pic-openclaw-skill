@@ -11,7 +11,7 @@ SAFETY_BOUNDARY = [
     "This report does not execute the proposed action.",
     "This checker does not run commands proposed by an agent.",
     "PIC accepted=true is not permission to execute.",
-    "settled=false is diagnostic, not a command failure.",
+    "settled=false means review is incomplete, not a command failure.",
 ]
 
 SECRET_PATTERNS = [

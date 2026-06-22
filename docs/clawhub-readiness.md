@@ -25,9 +25,13 @@ Do not run this in CI. Run it only after installing and authenticating the ClawH
 clawhub skill publish clawhub/pic-residual-guard \
   --slug pic-residual-guard \
   --name "PIC Residual Guard" \
-  --version 0.1.3 \
-  --tags "latest,openclaw,agent-safety,action-review,safety-assessment,workflow-verification,llm-validation" \
-  --changelog "Initial public release: residual-aware action checks for OpenClaw agents." \
+  --version 0.2.0 \
+  --tags "latest,openclaw,ai-agent,agent-safety,ai-safety,action-review,tool-safety,approval-check,workflow-verification,llm-validation,missing-evidence,unresolved-work" \
+  --changelog "Version 0.2.0: updated for current PIC agent check reports, clearer review-only wording, and general search terms for OpenClaw agent safety." \
+  --source-repo kadubon/pic-openclaw-skill \
+  --source-ref main \
+  --source-commit <commit-sha> \
+  --source-path clawhub/pic-residual-guard \
   --dry-run
 ```
 
@@ -39,9 +43,13 @@ Run this only after the dry run output and current ClawHub requirements have bee
 clawhub skill publish clawhub/pic-residual-guard \
   --slug pic-residual-guard \
   --name "PIC Residual Guard" \
-  --version 0.1.3 \
-  --tags "latest,openclaw,agent-safety,action-review,safety-assessment,workflow-verification,llm-validation" \
-  --changelog "Initial public release: residual-aware action checks for OpenClaw agents."
+  --version 0.2.0 \
+  --tags "latest,openclaw,ai-agent,agent-safety,ai-safety,action-review,tool-safety,approval-check,workflow-verification,llm-validation,missing-evidence,unresolved-work" \
+  --changelog "Version 0.2.0: updated for current PIC agent check reports, clearer review-only wording, and general search terms for OpenClaw agent safety." \
+  --source-repo kadubon/pic-openclaw-skill \
+  --source-ref main \
+  --source-commit <commit-sha> \
+  --source-path clawhub/pic-residual-guard
 ```
 
 ## Manual post-publish checks

